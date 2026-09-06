@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<extension key="ch.ipik.smtprouter" type="module">
+  <file>smtprouter</file>
+  <name>SMTP Router (IPIK)</name>
+  <description>Route CiviCRM outbound emails to the correct SMTP server based on the From address. Required for Infomaniak hosting where each sender must authenticate individually. Developed with Claude.ai.</description>
+  <license>AGPL-3.0</license>
+  <author>Frédéric Hiltbrand — IPIK</author>
+  <email>fred@ipik.ch</email>
+  <url>https://ipik.ch</url>
+  <releaseDate>2026-09-05</releaseDate>
+  <version>0.3</version>
+  <develStage>beta</develStage>
+  <compatibility>
+    <ver>6.0</ver>
+  </compatibility>
+  <comments>Tested on CiviCRM 6.15.4 / WordPress / Infomaniak shared hosting. Uses PEAR Mail (not PHPMailer) for SMTP delivery. Developed with Claude.ai (Anthropic).</comments>
+</extension>

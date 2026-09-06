@@ -1,0 +1,13 @@
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# Packaged releases (built from source, not tracked)
+*.tar
+*.zip
+
+# Local env / secrets (should never exist in this repo, but just in case)
+.env
+*.local.php
