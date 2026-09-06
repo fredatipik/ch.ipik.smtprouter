@@ -3,6 +3,23 @@
 <div class="crm-block crm-form-block crm-smtp-router-settings-block">
 
   {* ------------------------------------------------------------------ *}
+  {* Rappel : deux autres pages CiviCRM à configurer pour chaque adresse *}
+  {* ------------------------------------------------------------------ *}
+  <div class="messages status" style="margin-bottom:16px;">
+    <strong>{ts}Une adresse d'envoi ne fonctionne pleinement que si elle est aussi configurée ici :{/ts}</strong>
+    <ul style="margin:6px 0 0 20px;">
+      <li>
+        <a href="{$mailSettingsURL}">{ts}Comptes courriels ↗{/ts}</a>
+        — {ts}nécessaire pour l'email-to-activity et la gestion des rebonds (sans quoi l'email peut partir sans qu'une activité soit créée).{/ts}
+      </li>
+      <li>
+        <a href="{$fromEmailURL}">{ts}Adresses courriels (From) du site ↗{/ts}</a>
+        — {ts}nécessaire pour que l'adresse apparaisse comme option "From" dans les formulaires d'envoi CiviCRM.{/ts}
+      </li>
+    </ul>
+  </div>
+
+  {* ------------------------------------------------------------------ *}
   {* Encart : SMTP global CiviCRM (lecture seule) *}
   {* ------------------------------------------------------------------ *}
   <h3>{ts}Courrier sortant global (CiviCRM){/ts}

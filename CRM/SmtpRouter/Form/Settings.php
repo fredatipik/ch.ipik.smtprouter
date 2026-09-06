@@ -65,6 +65,16 @@ class CRM_SmtpRouter_Form_Settings extends CRM_Core_Form {
     $this->assign('globalSmtp', self::_getGlobalSmtp());
     $this->assign('globalSmtpEditURL', CRM_Utils_System::url('civicrm/admin/setting/smtp', 'reset=1'));
 
+    // A working sender address in CiviCRM actually needs THREE separate
+    // configurations: this page (SMTP credentials), "Comptes courriels"
+    // (email-to-activity / bounce handling), and "Adresses From du site"
+    // (makes the address selectable as a From option in send forms).
+    // Missing #2 was the root cause of a real bug (email sent successfully
+    // but no Activity record created) — link both here as a standing
+    // reminder rather than silently assuming they're configured.
+    $this->assign('mailSettingsURL', CRM_Utils_System::url('civicrm/admin/mailSettings', 'reset=1'));
+    $this->assign('fromEmailURL', CRM_Utils_System::url('civicrm/admin/options/from_email_address', 'reset=1'));
+
     // CSRF token for the delete/toggle GET links — see preProcess().
     $this->assign('csrfKey', CRM_Core_Key::get('CRM_SmtpRouter_Form_Settings'));
 
