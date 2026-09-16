@@ -2,16 +2,23 @@
 <extension key="ch.ipik.smtprouter" type="module">
   <file>smtprouter</file>
   <name>SMTP Router (IPIK)</name>
-  <description>Route CiviCRM outbound emails to the correct SMTP server based on the From address. Required for Infomaniak hosting where each sender must authenticate individually. Developed with Claude.ai.</description>
+  <description>Route CiviCRM outbound emails to the correct SMTP server based on the From address, for hosting where each sender must authenticate individually.</description>
   <license>AGPL-3.0</license>
-  <author>Frédéric Hiltbrand — IPIK</author>
-  <email>fred@ipik.ch</email>
-  <url>https://ipik.ch</url>
-  <releaseDate>2026-09-05</releaseDate>
-  <version>0.4</version>
+  <maintainer>
+    <author>Frédéric Hiltbrand — IPIK</author>
+    <email>fred@ipik.ch</email>
+  </maintainer>
+  <urls>
+    <url desc="Main Extension Page">https://github.com/fredatipik/ch.ipik.smtprouter</url>
+    <url desc="Documentation">https://github.com/fredatipik/ch.ipik.smtprouter/blob/main/README.md</url>
+    <url desc="Support">https://github.com/fredatipik/ch.ipik.smtprouter/issues</url>
+    <url desc="Licensing">https://www.gnu.org/licenses/agpl-3.0.html</url>
+  </urls>
+  <releaseDate>2026-09-06</releaseDate>
+  <version>0.4.0</version>
   <develStage>beta</develStage>
   <compatibility>
     <ver>6.0</ver>
   </compatibility>
-  <comments>Tested on CiviCRM 6.15.4 / WordPress / Infomaniak shared hosting. Uses PEAR Mail (not PHPMailer) for SMTP delivery. Developed with Claude.ai (Anthropic).</comments>
+  <comments>Tested on CiviCRM 6.15.4 / WordPress / Infomaniak shared hosting. Uses PEAR Mail (Mail_smtp / Net_SMTP), not PHPMailer, for SMTP delivery, since that is the mail stack bundled on this CiviCRM install. A working sender address also requires matching entries under Administer -&gt; Communications -&gt; Mail Accounts and Administer -&gt; Communications -&gt; From Email Addresses. Developed with the assistance of Claude.ai (Anthropic).</comments>
 </extension>

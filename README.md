@@ -1,23 +1,23 @@
 # SMTP Router (ch.ipik.smtprouter)
 
-Extension CiviCRM qui route chaque email sortant vers le bon serveur SMTP en fonction de l'adresse `From:`.
+A CiviCRM extension that routes each outbound email to the correct SMTP server based on the `From:` address.
 
-## Pourquoi
+## Why
 
-Sur un hébergement mutualisé comme Infomaniak, chaque adresse email qui envoie doit s'authentifier avec ses propres identifiants SMTP — impossible d'utiliser un seul serveur SMTP global pour plusieurs adresses (`info@association.ch`, `therapist1@association.ch`, etc.). CiviCRM ne gère nativement qu'un seul serveur SMTP global (Administer → System Settings → Outbound Mail).
+On some shared hosting providers (this extension was built and tested on Infomaniak), every sending email address must authenticate with its own SMTP credentials — you cannot use a single global SMTP server for multiple addresses (`info@association.org`, `therapist1@association.org`, `therapist2@association.org`, etc.). CiviCRM natively supports only one global SMTP server (Administer → System Settings → Outbound Mail).
 
-Cette extension permet de configurer plusieurs serveurs SMTP et de router automatiquement chaque email vers le bon serveur selon l'adresse `From:`, avec repli transparent sur le SMTP global si aucune configuration dédiée ne correspond.
+This extension lets you configure multiple SMTP servers and automatically routes each outgoing email to the right one based on its `From:` address, with a transparent fallback to the global SMTP server when no dedicated configuration matches.
 
-## Fonctionnement
+## How it works
 
-1. L'administrateur configure N serveurs SMTP dans **Administer → System Settings → SMTP Router**, un par adresse `From:`.
-2. À l'envoi, `hook_civicrm_alterMailParams` intercepte l'email, lit l'adresse `From:`, et cherche une configuration correspondante.
-3. Si trouvée : envoi via [PEAR Mail](https://pear.php.net/package/Mail) (`Mail_smtp`) avec les identifiants dédiés, puis `abortMailSend` est positionné pour empêcher CiviCRM de renvoyer via son SMTP global.
-4. Si non trouvée : CiviCRM utilise son SMTP global comme d'habitude.
+1. The administrator configures N SMTP servers under **Administer → System Settings → SMTP Router**, one per `From:` address.
+2. On send, `hook_civicrm_alterMailParams` intercepts the email, reads the `From:` address, and looks up a matching configuration.
+3. If found: the email is sent via [PEAR Mail](https://pear.php.net/package/Mail) (`Mail_smtp`) using the dedicated credentials, and `abortMailSend` is set so CiviCRM does not also send it through the global SMTP server.
+4. If not found: CiviCRM falls back to its usual global SMTP configuration.
 
-## Pourquoi PEAR Mail et pas PHPMailer
+## Why PEAR Mail instead of PHPMailer
 
-Selon la version et la distribution de CiviCRM, le mailer SMTP embarqué peut être PEAR Mail (`Mail_smtp` / `Net_SMTP`) plutôt que PHPMailer. Cette extension a été développée et testée sur une installation CiviCRM 6.15 (WordPress, hébergement Infomaniak) qui n'embarque que PEAR Mail — c'est donc ce paquet qui est utilisé, avec repli sur un test TCP brut si PEAR Mail est indisponible.
+Depending on the CiviCRM version and distribution, the bundled SMTP mailer may be PEAR Mail (`Mail_smtp` / `Net_SMTP`) rather than PHPMailer. This extension was developed and tested on a CiviCRM 6.15 install (WordPress, Infomaniak hosting) that only ships PEAR Mail — so that is what's used here, with a raw TCP connectivity test as a fallback if PEAR Mail is unavailable.
 
 ## Installation
 
@@ -25,31 +25,33 @@ Selon la version et la distribution de CiviCRM, le mailer SMTP embarqué peut ê
 cv ext:install ch.ipik.smtprouter
 ```
 
-Puis configurer via **Administer → System Settings → SMTP Router**.
+Then configure senders under **Administer → System Settings → SMTP Router**.
 
-## ⚠️ Configuration complète d'une adresse d'envoi
+## ⚠️ A sending address needs configuration in three places
 
-Ajouter une adresse dans SMTP Router **ne suffit pas** pour qu'elle fonctionne pleinement dans CiviCRM. Trois endroits doivent être renseignés :
+Adding an address to SMTP Router alone is **not enough** for it to work fully in CiviCRM. Three separate places need to be set up:
 
-1. **SMTP Router** (cette extension) — les identifiants du serveur SMTP dédié.
-2. **Comptes courriels** (`civicrm/admin/mailSettings`) — nécessaire pour l'email-to-activity et la gestion des rebonds ; sans cette entrée, l'email peut partir correctement mais l'activité associée peut ne pas être créée.
-3. **Adresses courriels (From) du site** (`civicrm/admin/options/from_email_address`) — pour que l'adresse apparaisse comme option "From" sélectionnable dans les formulaires d'envoi CiviCRM.
+1. **SMTP Router** (this extension) — the dedicated SMTP server credentials.
+2. **Mail Accounts** (`civicrm/admin/mailSettings`) — needed for email-to-activity processing and bounce handling. Without a matching entry here, an email can be sent successfully by SMTP Router while CiviCRM fails to log the corresponding Activity.
+3. **From Email Addresses** (`civicrm/admin/options/from_email_address`) — needed for the address to appear as a selectable "From" option in CiviCRM's send-email forms.
 
-## Sécurité
+The extension's settings page includes reminders and direct links to the other two pages.
 
-- Mots de passe SMTP chiffrés en base via `Civi::service('crypto.token')`.
-- Toutes les routes verrouillées sur la permission `administer CiviCRM`.
-- Actions destructives (suppression/activation d'une config) protégées contre le CSRF via `CRM_Core_Key`.
-- Aucune requête SQL non paramétrée.
+## Security
 
-## Compatibilité testée
+- SMTP passwords are encrypted at rest via `Civi::service('crypto.token')`.
+- All routes are restricted to the `administer CiviCRM` permission.
+- Destructive actions (deleting/toggling a config) are protected against CSRF via `CRM_Core_Key`.
+- All SQL queries are parameterized.
 
-- CiviCRM 6.15.4 / WordPress / hébergement mutualisé Infomaniak.
+## Tested compatibility
 
-## Licence
+- CiviCRM 6.15.4 / WordPress / Infomaniak shared hosting.
+
+## License
 
 AGPL-3.0
 
-## Crédits
+## Credits
 
-Développé par Frédéric Hiltbrand ([IPIK](https://ipik.ch)) avec l'assistance de [Claude.ai](https://claude.ai) (Anthropic).
+Developed by Frédéric Hiltbrand ([IPIK](https://ipik.ch)) with the assistance of [Claude.ai](https://claude.ai) (Anthropic).
