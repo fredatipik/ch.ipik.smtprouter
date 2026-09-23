@@ -25,11 +25,11 @@ class CRM_SmtpRouter_Form_Settings extends CRM_Core_Form {
     if ($action === 'delete' && $id > 0) {
       $key = CRM_Utils_Request::retrieve('key', 'String', $this, FALSE, '');
       if (!CRM_Core_Key::validate($key, 'CRM_SmtpRouter_Form_Settings')) {
-        CRM_Core_Session::setStatus(ts('Invalid or expired link. Please try again from the list.'), ts('SMTP Router'), 'error');
+        CRM_Core_Session::setStatus(ts('Lien invalide ou expiré. Merci de réessayer depuis la liste.'), ts('SMTP Router'), 'error');
         CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/smtprouter/settings'));
       }
       CRM_SmtpRouter_BAO_SmtpConfig::deleteById($id);
-      CRM_Core_Session::setStatus(ts('Configuration deleted.'), ts('SMTP Router'), 'success');
+      CRM_Core_Session::setStatus(ts('Configuration supprimée.'), ts('SMTP Router'), 'success');
       CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/smtprouter/settings'));
     }
 
@@ -37,7 +37,7 @@ class CRM_SmtpRouter_Form_Settings extends CRM_Core_Form {
     if ($action === 'toggle' && $id > 0) {
       $key = CRM_Utils_Request::retrieve('key', 'String', $this, FALSE, '');
       if (!CRM_Core_Key::validate($key, 'CRM_SmtpRouter_Form_Settings')) {
-        CRM_Core_Session::setStatus(ts('Invalid or expired link. Please try again from the list.'), ts('SMTP Router'), 'error');
+        CRM_Core_Session::setStatus(ts('Lien invalide ou expiré. Merci de réessayer depuis la liste.'), ts('SMTP Router'), 'error');
         CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/smtprouter/settings'));
       }
       CRM_SmtpRouter_BAO_SmtpConfig::toggleActive($id);
@@ -65,16 +65,6 @@ class CRM_SmtpRouter_Form_Settings extends CRM_Core_Form {
     $this->assign('globalSmtp', self::_getGlobalSmtp());
     $this->assign('globalSmtpEditURL', CRM_Utils_System::url('civicrm/admin/setting/smtp', 'reset=1'));
 
-    // A working sender address in CiviCRM actually needs THREE separate
-    // configurations: this page (SMTP credentials), "Comptes courriels"
-    // (email-to-activity / bounce handling), and "Adresses From du site"
-    // (makes the address selectable as a From option in send forms).
-    // Missing #2 was the root cause of a real bug (email sent successfully
-    // but no Activity record created) — link both here as a standing
-    // reminder rather than silently assuming they're configured.
-    $this->assign('mailSettingsURL', CRM_Utils_System::url('civicrm/admin/mailSettings', 'reset=1'));
-    $this->assign('fromEmailURL', CRM_Utils_System::url('civicrm/admin/options/from_email_address', 'reset=1'));
-
     // CSRF token for the delete/toggle GET links — see preProcess().
     $this->assign('csrfKey', CRM_Core_Key::get('CRM_SmtpRouter_Form_Settings'));
 
@@ -83,21 +73,21 @@ class CRM_SmtpRouter_Form_Settings extends CRM_Core_Form {
     if ($action !== 'list') {
       // Add / Edit form elements.
       $this->addElement('hidden', 'id');
-      $this->add('text', 'from_email', ts('From Address'), ['class' => 'huge', 'placeholder' => 'info@association.ch'], TRUE);
-      $this->add('text', 'smtp_host',  ts('SMTP Host'),   ['class' => 'huge', 'placeholder' => 'mail.infomaniak.com'], TRUE);
+      $this->add('text', 'from_email', ts('Adresse From'), ['class' => 'huge', 'placeholder' => 'info@association.ch'], TRUE);
+      $this->add('text', 'smtp_host',  ts('Hôte SMTP'),   ['class' => 'huge', 'placeholder' => 'mail.infomaniak.com'], TRUE);
       $this->add('text', 'smtp_port',  ts('Port'),        ['class' => 'four', 'placeholder' => '587'], TRUE);
-      $this->addYesNo('smtp_auth', ts('Authentication'));
-      $this->add('text',     'smtp_username', ts('SMTP Username'), ['class' => 'huge']);
-      $this->add('password', 'smtp_password', ts('SMTP Password'), ['class' => 'huge', 'autocomplete' => 'new-password']);
-      $this->add('select', 'smtp_security', ts('Security'), [
+      $this->addYesNo('smtp_auth', ts('Authentification'));
+      $this->add('text',     'smtp_username', ts('Utilisateur SMTP'), ['class' => 'huge']);
+      $this->add('password', 'smtp_password', ts('Mot de passe SMTP'), ['class' => 'huge', 'autocomplete' => 'new-password']);
+      $this->add('select', 'smtp_security', ts('Sécurité'), [
         'tls'  => ts('TLS (STARTTLS, port 587)'),
         'ssl'  => ts('SSL (port 465)'),
-        'none' => ts('None'),
+        'none' => ts('Aucune'),
       ]);
-      $this->addYesNo('is_active', ts('Active'));
+      $this->addYesNo('is_active', ts('Actif'));
 
       $this->addButtons([
-        ['type' => 'submit', 'name' => ts('Save'), 'isDefault' => TRUE],
+        ['type' => 'submit', 'name' => ts('Enregistrer'), 'isDefault' => TRUE],
       ]);
     }
   }
@@ -177,7 +167,7 @@ class CRM_SmtpRouter_Form_Settings extends CRM_Core_Form {
 
     CRM_SmtpRouter_BAO_SmtpConfig::save($data);
 
-    CRM_Core_Session::setStatus(ts('SMTP configuration saved.'), ts('SMTP Router'), 'success');
+    CRM_Core_Session::setStatus(ts('Configuration SMTP enregistrée.'), ts('SMTP Router'), 'success');
     CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/smtprouter/settings'));
   }
 }

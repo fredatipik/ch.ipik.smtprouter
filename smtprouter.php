@@ -267,45 +267,26 @@ function _smtprouter_install_navigation(): void {
 // ---------------------------------------------------------------------------
 
 /**
- * hook_civicrm_alterMailParams
+ * hook_civicrm_alterMailer
  *
- * Called before CiviCRM sends any email. We inspect the From address, look up
- * a matching SMTP config, and if found we send the email ourselves via PHPMailer
- * then set $params['abortMailSend'] = TRUE so CiviCRM doesn't double-send.
+ * CiviCRM builds one mailer object per request and lets extensions alter it.
+ * We attach a filter to it: filters run once the message is fully assembled —
+ * headers and MIME body, attachments included — and returning a value from a
+ * filter short-circuits CiviCRM's own delivery.
  *
- * If no config is found → do nothing → CiviCRM uses its global SMTP.
- *
- * @param array  $params      Mail parameters (from, to, subject, html, …)
- * @param string $context     'civimail', 'transactional', 'activity', etc.
+ * Routing at this point means we never rebuild the message ourselves. Before
+ * v0.5, routing happened in hook_civicrm_alterMailParams: the message was
+ * rebuilt by hand as a single text/html part and sent from there, which
+ * silently dropped every attachment (invoices, receipts, any file attached to
+ * an email) and the plain-text alternative.
  */
-function smtprouter_civicrm_alterMailParams(array &$params, string $context = ''): void {
-  // Extract the bare email address from the From field.
-  $fromRaw = $params['from'] ?? '';
-  $fromEmail = _smtprouter_extract_email($fromRaw);
-
-  if (!$fromEmail) {
+function smtprouter_civicrm_alterMailer(&$mailer, $driver, $params): void {
+  if (!is_object($mailer) || !method_exists($mailer, 'addFilter')) {
+    // Not the filtered wrapper CiviCRM normally provides — leave it alone.
     return;
   }
-
-  $config = CRM_SmtpRouter_BAO_SmtpConfig::getByFromEmail($fromEmail);
-  if (!$config) {
-    // No dedicated SMTP for this sender → let CiviCRM handle it.
-    return;
-  }
-
-  try {
-    CRM_SmtpRouter_Mailer::sendViaConfig($params, $config);
-    // Tell CiviCRM not to send again.
-    $params['abortMailSend'] = TRUE;
-    \Civi::log()->info('smtprouter: sent via dedicated SMTP for ' . $fromEmail);
-  }
-  catch (\Throwable $e) {
-    // Log and let the error propagate so CiviCRM's mail error handling triggers.
-    \Civi::log()->error('smtprouter: send failed for ' . $fromEmail . ': ' . $e->getMessage());
-    // Do NOT set abortMailSend — this allows CiviCRM's error handling to run.
-    // The email will likely fail via the global SMTP too if credentials are wrong,
-    // but at least it won't silently disappear.
-  }
+  // 5000: after CiviCRM's own logging (2000) and validation (2100) filters.
+  $mailer->addFilter('5000_smtprouter', ['CRM_SmtpRouter_Mailer', 'routeFilter']);
 }
 
 // ---------------------------------------------------------------------------

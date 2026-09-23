@@ -93,8 +93,83 @@ class CRM_SmtpRouter_Mailer {
     return [TRUE, "Connexion TCP OK vers $host:$port. Bannière : " . trim($banner) . ". (PEAR Mail absent : authentification non testée.)"];
   }
 
+
+  /**
+   * Build a PEAR Mail_smtp transport from a config row.
+   *
+   * @return \Mail|\PEAR_Error
+   */
+  public static function buildTransport(array $config) {
+    $useSsl = ($config['smtp_security'] === 'ssl');
+    return \Mail::factory('smtp', [
+      'host'     => $useSsl ? 'ssl://' . $config['smtp_host'] : $config['smtp_host'],
+      'port'     => (int) $config['smtp_port'],
+      'auth'     => (bool) $config['smtp_auth'],
+      'username' => $config['smtp_username'] ?? '',
+      'password' => $config['smtp_password'] ?? '',
+      'timeout'  => 15,
+    ]);
+  }
+
+  /**
+   * Mailer filter: send through the SMTP account matching the From address.
+   *
+   * Called by CiviCRM with the message already assembled, so the body passed
+   * on is byte-for-byte the one CiviCRM built — multipart, attachments and all.
+   *
+   * @param \Mail  $mailer      CiviCRM's mailer (unused; we substitute our own).
+   * @param mixed  $recipients  Envelope recipients (To + Cc + Bcc).
+   * @param array  $headers     Message headers, including From.
+   * @param string $body        Fully built MIME body.
+   *
+   * @return null|true|\PEAR_Error
+   *   NULL  → no dedicated account for this sender; CiviCRM sends as usual.
+   *   TRUE  → sent by us; CiviCRM must not send again.
+   *   Error → let CiviCRM report the failure.
+   */
+  public static function routeFilter($mailer, &$recipients, &$headers, &$body) {
+    $fromEmail = _smtprouter_extract_email((string) ($headers['From'] ?? ''));
+    if (!$fromEmail) {
+      return NULL;
+    }
+
+    static $transports = [];
+    if (!array_key_exists($fromEmail, $transports)) {
+      $transports[$fromEmail] = NULL;
+      $config = CRM_SmtpRouter_BAO_SmtpConfig::getByFromEmail($fromEmail);
+      if ($config) {
+        if (!self::_loadPear()) {
+          \Civi::log()->error('smtprouter: PEAR Mail unavailable; falling back to the global SMTP.');
+          return NULL;
+        }
+        $transport = self::buildTransport($config);
+        if (\PEAR::isError($transport)) {
+          \Civi::log()->error('smtprouter: cannot build SMTP transport for ' . $fromEmail . ': ' . $transport->getMessage());
+          return NULL;
+        }
+        $transports[$fromEmail] = $transport;
+      }
+    }
+    if (!$transports[$fromEmail]) {
+      // No dedicated account for this sender: CiviCRM's global SMTP applies.
+      return NULL;
+    }
+
+    $result = $transports[$fromEmail]->send($recipients, $headers, $body);
+    if (\PEAR::isError($result)) {
+      \Civi::log()->error('smtprouter: send failed for ' . $fromEmail . ': ' . $result->getMessage());
+      return $result;
+    }
+    \Civi::log()->info('smtprouter: sent via dedicated SMTP for ' . $fromEmail);
+    return TRUE;
+  }
+
   /**
    * Send $params through the SMTP config for $fromEmail, using PEAR Mail_smtp.
+   *
+   * @deprecated since 0.5.0 — rebuilds the message and loses attachments.
+   *   Routing now happens in routeFilter(), on the message CiviCRM built.
+   *   Kept only so existing calls do not fatal.
    *
    * $params keys used: from, to, cc, bcc, subject, html, text, headers
    *
