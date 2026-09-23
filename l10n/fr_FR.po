@@ -1,0 +1,86 @@
+# French translation for ch.ipik.smtprouter
+# Copyright (C) 2026 IPIK
+msgid ""
+msgstr ""
+"Project-Id-Version: ch.ipik.smtprouter\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-17 11:39+0200\n"
+"Language: fr_FR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: CRM/SmtpRouter/Form/Settings.php:15
+msgid "SMTP Router — Configurations"
+msgstr "SMTP Router — Configurations"
+
+#: CRM/SmtpRouter/Form/Settings.php:28 CRM/SmtpRouter/Form/Settings.php:40
+msgid "Invalid or expired link. Please try again from the list."
+msgstr "Lien invalide ou expiré. Merci de réessayer depuis la liste."
+
+#: CRM/SmtpRouter/Form/Settings.php:28 CRM/SmtpRouter/Form/Settings.php:32
+#: CRM/SmtpRouter/Form/Settings.php:40 CRM/SmtpRouter/Form/Settings.php:180
+msgid "SMTP Router"
+msgstr "SMTP Router"
+
+#: CRM/SmtpRouter/Form/Settings.php:32
+msgid "Configuration deleted."
+msgstr "Configuration supprimée."
+
+#: CRM/SmtpRouter/Form/Settings.php:86
+msgid "From Address"
+msgstr "Adresse From"
+
+#: CRM/SmtpRouter/Form/Settings.php:87
+msgid "SMTP Host"
+msgstr "Hôte SMTP"
+
+#: CRM/SmtpRouter/Form/Settings.php:88
+msgid "Port"
+msgstr "Port"
+
+#: CRM/SmtpRouter/Form/Settings.php:89
+msgid "Authentication"
+msgstr "Authentification"
+
+#: CRM/SmtpRouter/Form/Settings.php:90
+msgid "SMTP Username"
+msgstr "Utilisateur SMTP"
+
+#: CRM/SmtpRouter/Form/Settings.php:91
+msgid "SMTP Password"
+msgstr "Mot de passe SMTP"
+
+#: CRM/SmtpRouter/Form/Settings.php:92
+msgid "Security"
+msgstr "Sécurité"
+
+#: CRM/SmtpRouter/Form/Settings.php:93
+msgid "TLS (STARTTLS, port 587)"
+msgstr "TLS (STARTTLS, port 587)"
+
+#: CRM/SmtpRouter/Form/Settings.php:94
+msgid "SSL (port 465)"
+msgstr "SSL (port 465)"
+
+#: CRM/SmtpRouter/Form/Settings.php:95
+msgid "None"
+msgstr "Aucune"
+
+#: CRM/SmtpRouter/Form/Settings.php:97
+msgid "Active"
+msgstr "Actif"
+
+#: CRM/SmtpRouter/Form/Settings.php:100
+msgid "Save"
+msgstr "Enregistrer"
+
+#: CRM/SmtpRouter/Form/Settings.php:180
+msgid "SMTP configuration saved."
+msgstr "Configuration SMTP enregistrée."
+
+#~ msgid "Net_SMTP"
+#~ msgstr "Net_SMTP"
+
+#~ msgid "PEAR"
+#~ msgstr "PEAR"
