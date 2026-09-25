@@ -8,6 +8,12 @@
     <author>Frédéric Hiltbrand — IPIK</author>
     <email>fh@ipik.ch</email>
   </maintainer>
+  <authors>
+  <author>
+    <name>Frédéric Hiltbrand</name>
+    <role>maintainer</role>
+  </author>
+</authors>
   <urls>
     <url desc="Main">https://lab.civicrm.org/extensions/smtprouter</url>
     <url desc="Documentation">https://lab.civicrm.org/extensions/smtprouter/-/blob/main/README.md</url>
@@ -19,5 +25,9 @@
   <compatibility>
     <ver>6.0</ver>
   </compatibility>
+  <tags>
+  <tag>email</tag>
+  <tag>smtp</tag>
+</tags>
   <comments>Tested on CiviCRM 6.15.4 / WordPress / Infomaniak shared hosting. Uses PEAR Mail (not PHPMailer) for SMTP delivery. Developed with Claude.ai (Anthropic).</comments>
 </extension>
